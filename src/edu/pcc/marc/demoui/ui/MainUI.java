@@ -37,6 +37,9 @@ public class MainUI {
         Integer minShows = Integer.parseInt(minVotesField.getText());
         String titleType = (String)typeCombo.getSelectedItem();
         String genre = (String)genreCombo.getSelectedItem();
+        if (minShows < 1000) {
+            minShows = 1000;
+        }
         ArrayList<Show> shows = Show.findShows(minShows, titleType, genre);
         DefaultTableModel model = (DefaultTableModel)showTable.getModel();
 
