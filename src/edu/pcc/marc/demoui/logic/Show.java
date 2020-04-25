@@ -5,13 +5,19 @@ import edu.pcc.marc.demoui.data.Database;
 import java.util.ArrayList;
 
 public class Show {
+    private String id;
+    private String parentId;
     private String primaryTitle;
+    private String parentTitle;
     private Integer startYear;
     private Float averageRating;
     private Integer numVotes;
 
-    public Show(String pt, Integer sy, Float ar, Integer nv) {
+    public Show(String i, String pid, String pt, String parti, Integer sy, Float ar, Integer nv) {
+        id = i;
+        parentId = pid;
         primaryTitle = pt;
+        parentTitle = parti;
         startYear = sy;
         averageRating = ar;
         numVotes = nv;
@@ -35,5 +41,17 @@ public class Show {
 
     public Integer getNumVotes() {
         return numVotes;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public String getParentId() {
+        return parentId;
+    }
+
+    public String getParentTitle() {
+        return parentTitle;
     }
 }
