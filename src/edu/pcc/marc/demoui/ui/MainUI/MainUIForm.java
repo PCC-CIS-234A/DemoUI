@@ -1,4 +1,4 @@
-package edu.pcc.marc.demoui.ui;
+package edu.pcc.marc.demoui.ui.MainUI;
 
 import edu.pcc.marc.demoui.Main;
 import edu.pcc.marc.demoui.logic.Genre;
@@ -15,7 +15,7 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.ArrayList;
 
-public class MainUI {
+public class MainUIForm {
     private JPanel rootPanel;
     private JTable showTable;
     private JComboBox genreCombo;
@@ -25,7 +25,7 @@ public class MainUI {
     private JButton imdbButton;
     private ArrayList<Show> currentShows = null;
 
-    public MainUI() {
+    public MainUIForm() {
         createGenreCombo();
         createTypeCombo();
         createMinVotesField();

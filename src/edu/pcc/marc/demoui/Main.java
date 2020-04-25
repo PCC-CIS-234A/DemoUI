@@ -1,7 +1,7 @@
 package edu.pcc.marc.demoui;
 
 import edu.pcc.marc.demoui.ui.InfoGraph.InfoGraphForm;
-import edu.pcc.marc.demoui.ui.MainUI;
+import edu.pcc.marc.demoui.ui.MainUI.MainUIForm;
 
 import javax.swing.*;
 
@@ -17,7 +17,7 @@ public class Main {
     }
 
     private static void createGUI() {
-        MainUI ui = new MainUI();
+        MainUIForm ui = new MainUIForm();
         JPanel root = ui.getRootPanel();
         JFrame frame = new JFrame();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

@@ -11,7 +11,7 @@
         <constraints border-constraint="Center"/>
         <properties>
           <minimumSize width="1024" height="700"/>
-          <preferredSize width="1024" height="768"/>
+          <preferredSize width="1024" height="700"/>
         </properties>
       </component>
     </children>
