@@ -39,6 +39,7 @@ public class MainUI {
         String genre = (String)genreCombo.getSelectedItem();
         ArrayList<Show> shows = Show.findShows(minShows, titleType, genre);
         DefaultTableModel model = (DefaultTableModel)showTable.getModel();
+        System.out.println(genre + " " + titleType + " " + minShows);
 
         model.setRowCount(0);
         for (Show show : shows) {
@@ -68,6 +69,7 @@ public class MainUI {
 
     private void createGenreCombo() {
         ArrayList<Genre> genres = Genre.getAllGenres();
+        genreCombo.addItem(Genre.ALL_GENRES);
         for (Genre genre : genres) {
             genreCombo.addItem(genre.getName());
         }
@@ -83,6 +85,7 @@ public class MainUI {
 
     private void createTypeCombo() {
         ArrayList<ShowType> types = ShowType.getAllShowTypes();
+        typeCombo.addItem(ShowType.ALL_TYPES);
         for (ShowType type : types) {
             typeCombo.addItem(type.getName());
         }

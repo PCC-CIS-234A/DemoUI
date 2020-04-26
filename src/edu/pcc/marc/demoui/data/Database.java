@@ -17,14 +17,14 @@ public class Database {
     private static String GET_ALL_GENRES_SQL = "SELECT DISTINCT RTRIM(genre) AS genre FROM title_genre;";
     private static String GET_ALL_TYPES_SQL = "SELECT DISTINCT RTRIM(titleType) AS titleType FROM title_basics;";
 
-    private static String FIND_SHOWS_SQL = "SELECT TOP 50 primaryTitle, startYear, averageRating, numVotes\n" +
+    private static String FIND_SHOWS_START_SQL = "SELECT TOP 50 primaryTitle, startYear, averageRating, numVotes\n" +
             "FROM title_basics\n" +
-            "JOIN title_ratings ON title_basics.tconst = title_ratings.tconst\n" +
-            "JOIN title_genre ON title_basics.tconst = title_genre.tconst\n" +
-            "WHERE numVotes > ?\n" +
-            "AND titleType = ?\n" +
-            "AND\tgenre = ?\n" +
-            "ORDER BY averageRating DESC;";
+            "JOIN title_ratings ON title_basics.tconst = title_ratings.tconst\n";
+    private static String FIND_SHOWS_JOIN_GENRES_SQL = "JOIN title_genre ON title_basics.tconst = title_genre.tconst\n";
+    private static String FIND_SHOWS_WHERE_NUMVOTES_SQL = "WHERE numVotes > ?\n";
+    private static String FIND_SHOWS_TYPE_SQL = "AND titleType = ?\n";
+    private static String FIND_SHOWS_GENRE_SQL = "AND genre = ?\n";
+    private static String FIND_SHOWS_END_SQL = "ORDER BY averageRating DESC;";
 
 
     public static void connect() {
@@ -76,12 +76,29 @@ public class Database {
     public static ArrayList<Show> findShows(Integer minShows, String titleType, String genre) {
         connect();
         ArrayList<Show> shows = new ArrayList<Show>();
+        boolean includeTypes = !titleType.equals(ShowType.ALL_TYPES);
+        boolean includeGenres = !genre.equals(Genre.ALL_GENRES);
 
         try {
-            PreparedStatement stmt = connection.prepareStatement(FIND_SHOWS_SQL);
+            String query = FIND_SHOWS_START_SQL;
+            if (includeGenres)
+                query += FIND_SHOWS_JOIN_GENRES_SQL;
+            query += FIND_SHOWS_WHERE_NUMVOTES_SQL;
+            if (includeTypes)
+                query += FIND_SHOWS_TYPE_SQL;
+            if (includeGenres)
+                query += FIND_SHOWS_GENRE_SQL;
+            query += FIND_SHOWS_END_SQL;
+
+            PreparedStatement stmt = connection.prepareStatement(query);
             stmt.setInt(1, minShows);
-            stmt.setString(2, titleType);
-            stmt.setString(3, genre);
+            int param = 2;
+            if (includeTypes) {
+                stmt.setString(param, titleType);
+                param++;
+            }
+            if (includeGenres)
+                stmt.setString(param, genre);
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
                 // primaryTitle, startYear, averageRating, numVotes

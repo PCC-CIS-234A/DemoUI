@@ -7,6 +7,8 @@ import java.util.ArrayList;
 public class Genre {
     private String name;
 
+    public static final String ALL_GENRES = "-- All Genres --";
+
     public Genre(String n) {
         name = n;
     }
