@@ -5,7 +5,9 @@
     <constraints>
       <xy x="20" y="20" width="500" height="400"/>
     </constraints>
-    <properties/>
+    <properties>
+      <preferredSize width="1024" height="670"/>
+    </properties>
     <border type="none"/>
     <children>
       <grid id="d59f6" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
@@ -80,7 +82,9 @@
                 <constraints/>
                 <properties>
                   <autoCreateRowSorter value="false"/>
-                  <preferredScrollableViewportSize width="600" height="200"/>
+                  <maximumSize width="2147483647" height="65536"/>
+                  <preferredScrollableViewportSize width="1024" height="670"/>
+                  <preferredSize width="1024" height="670"/>
                 </properties>
               </component>
             </children>

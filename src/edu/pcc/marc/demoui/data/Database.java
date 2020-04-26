@@ -17,15 +17,44 @@ public class Database {
     private static String GET_ALL_GENRES_SQL = "SELECT DISTINCT RTRIM(genre) AS genre FROM title_genre;";
     private static String GET_ALL_TYPES_SQL = "SELECT DISTINCT RTRIM(titleType) AS titleType FROM title_basics;";
 
-    private static String FIND_SHOWS_SQL = "SELECT TOP 50 primaryTitle, startYear, averageRating, numVotes\n" +
-            "FROM title_basics\n" +
-            "JOIN title_ratings ON title_basics.tconst = title_ratings.tconst\n" +
-            "JOIN title_genre ON title_basics.tconst = title_genre.tconst\n" +
-            "WHERE numVotes > ?\n" +
-            "AND titleType = ?\n" +
-            "AND\tgenre = ?\n" +
-            "ORDER BY averageRating DESC;";
-
+    private static String FIND_SHOWS_SQL = "SELECT        TOP 200\n" +
+            "            child.tconst,\n" +
+            "            RTRIM(child.titleType) AS titleType,\n" +
+            "            child.primaryTitle,\n" +
+            "            parent.primaryTitle AS parentTitle,\n" +
+            "            child.startYear,\n" +
+            "            child.runtimeMinutes,\n" +
+            "            averageRating,\n" +
+            "            numVotes,\n" +
+            "            (\n" +
+            "                SELECT        ', ' + genre\n" +
+            "                FROM        title_genre\n" +
+            "                WHERE        tconst = child.tconst\n" +
+            "                FOR XML PATH('')\n" +
+            "            ) AS genres,\n" +
+            "            (\n" +
+            "                SELECT MAX(numEpisodes)\n" +
+            "                FROM (\n" +
+            "                  SELECT    COUNT(*) AS numEpisodes\n" +
+            "                  FROM      title_episode\n" +
+            "                  WHERE     parentTconst = child.tconst\n" +
+            "                  UNION ALL\n" +
+            "                  SELECT    COUNT(*) AS numEpisodes\n" +
+            "                  FROM      title_episode\n" +
+            "                  WHERE     parentTconst = parent.tconst\n" +
+            "                ) AS NE\n" +
+            "            ) AS numEpisodes,\n" +
+            "            parent.tconst AS parentTconst\n" +
+            "FROM        title_basics AS child\n" +
+            "JOIN        title_ratings ON child.tconst = title_ratings.tconst\n" +
+            "JOIN        title_genre ON child.tconst = title_genre.tconst\n" +
+            "LEFT JOIN    title_episode ON child.tconst = title_episode.tconst\n" +
+            "LEFT JOIN    title_basics AS parent ON title_episode.parentTconst = parent.tconst\n" +
+            "WHERE        numVotes > ?\n" +
+            "AND            child.titleType = ?\n" +
+            "AND            genre = ?\n" +
+            "GROUP BY    child.tconst, child.titleType, child.primaryTitle, parent.primaryTitle, child.startYear, child.runtimeMinutes, averageRating, numVotes, parent.tconst\n" +
+            "ORDER BY    averageRating DESC;";
 
     public static void connect() {
         if (connection != null) {
@@ -86,10 +115,17 @@ public class Database {
             while (rs.next()) {
                 // primaryTitle, startYear, averageRating, numVotes
                 shows.add(new Show(
+                        rs.getString("tconst"),
                         rs.getString("primaryTitle"),
+                        rs.getString("titleType"),
+                        rs.getString("parentTitle"),
                         rs.getInt("startYear"),
+                        rs.getInt("runtimeMinutes"),
                         rs.getFloat("averageRating"),
-                        rs.getInt("numVotes")
+                        rs.getInt("numVotes"),
+                        rs.getString("genres").substring(2),
+                        rs.getInt("numEpisodes"),
+                        rs.getString("parentTconst")
                 ));
             }
         } catch (SQLException e) {
