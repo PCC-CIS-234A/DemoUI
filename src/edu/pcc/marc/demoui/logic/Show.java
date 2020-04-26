@@ -10,15 +10,17 @@ public class Show {
     private String primaryTitle;
     private String parentTitle;
     private Integer startYear;
+    private String titleType;
     private Float averageRating;
     private Integer numVotes;
 
-    public Show(String i, String pid, String pt, String parti, Integer sy, Float ar, Integer nv) {
+    public Show(String i, String pid, String pt, String parti, Integer sy, String tt, Float ar, Integer nv) {
         id = i;
         parentId = pid;
         primaryTitle = pt;
         parentTitle = parti;
         startYear = sy;
+        titleType = tt;
         averageRating = ar;
         numVotes = nv;
     }
@@ -33,6 +35,10 @@ public class Show {
 
     public Integer getStartYear() {
         return startYear;
+    }
+
+    public String getTitleType() {
+        return titleType;
     }
 
     public Float getAverageRating() {

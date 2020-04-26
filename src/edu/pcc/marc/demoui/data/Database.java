@@ -19,7 +19,7 @@ public class Database {
     private static String GET_ALL_TYPES_SQL = "SELECT DISTINCT RTRIM(titleType) AS titleType FROM title_basics;";
 
     private static String FIND_SHOWS_SQL = "SELECT TOP 50 tb.tconst, te.parentTconst, tb.primaryTitle,\n" +
-            "           tb2.primaryTitle AS parentTitle, tb.startYear, averageRating, numVotes\n" +
+            "           tb2.primaryTitle AS parentTitle, tb.startYear, RTRIM(tb.titleType) AS titleType, averageRating, numVotes\n" +
             "FROM title_basics AS tb\n" +
             "JOIN title_ratings AS tr ON tb.tconst = tr.tconst\n" +
             "JOIN title_genre AS tg ON tb.tconst = tg.tconst\n" +
@@ -101,6 +101,7 @@ public class Database {
                         rs.getString("primaryTitle"),
                         rs.getString("parentTitle"),
                         rs.getInt("startYear"),
+                        rs.getString("titleType"),
                         rs.getFloat("averageRating"),
                         rs.getInt("numVotes")
                 ));
