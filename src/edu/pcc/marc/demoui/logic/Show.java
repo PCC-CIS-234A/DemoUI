@@ -70,4 +70,12 @@ public class Show {
     public String getGenres() {
         return genres;
     }
+
+    public String getId() {
+        return id;
+    }
+
+    public String getParentId() {
+        return parentId;
+    }
 }

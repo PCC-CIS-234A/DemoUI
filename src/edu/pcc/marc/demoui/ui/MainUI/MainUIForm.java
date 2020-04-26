@@ -1,5 +1,6 @@
-package edu.pcc.marc.demoui.ui;
+package edu.pcc.marc.demoui.ui.MainUI;
 
+import edu.pcc.marc.demoui.Main;
 import edu.pcc.marc.demoui.logic.Genre;
 import edu.pcc.marc.demoui.logic.Show;
 import edu.pcc.marc.demoui.logic.ShowType;
@@ -10,11 +11,15 @@ import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.net.URL;
 import java.util.ArrayList;
 
-public class MainUI {
+public class MainUIForm {
     private JPanel rootPanel;
     private JTable showTable;
     private JComboBox genreCombo;
@@ -23,11 +28,16 @@ public class MainUI {
     private JButton episodeButton;
     private JButton imdbButton;
     private DefaultTableModel showTableModel;
+    private ArrayList<Show> currentShows = null;
+    private Show selectedShow;
 
-    public MainUI() {
+    public MainUIForm() {
         createGenreCombo();
         createTypeCombo();
         createMinVotesField();
+        createTable();
+        createEpisodesButton();
+        createIMDBButton();
         showShows();
     }
 
@@ -46,14 +56,14 @@ public class MainUI {
         Integer minShows = Integer.parseInt(minVotesField.getText());
         String titleType = (String)typeCombo.getSelectedItem();
         String genre = (String)genreCombo.getSelectedItem();
-        ArrayList<Show> shows = Show.findShows(minShows, titleType, genre);
+        currentShows = Show.findShows(minShows, titleType, genre);
         DefaultTableModel model = (DefaultTableModel)showTable.getModel();
 
-        setupTable();
+        createTable();
         model.setRowCount(0);
         boolean hasParentTitle = false;
         boolean hasEpisodes = false;
-        for (Show show: shows) {
+        for (Show show: currentShows) {
             if (show.getParentTitle() != null)
                 hasParentTitle = true;
             if (show.getNumEpisodes() > 0)
@@ -80,7 +90,7 @@ public class MainUI {
         }
     }
 
-    private void setupTable() {
+    private void createTable() {
         // Create a default table model with three columns named Email, Password and Role, and no table data.
         showTableModel = new DefaultTableModel(
                 // Initial data (empty)
@@ -118,6 +128,25 @@ public class MainUI {
         showTable.getColumnModel().getColumn(2).setMinWidth(200);
         showTable.getColumnModel().getColumn(2).setMaxWidth(250);
         showTable.getColumnModel().getColumn(7).setMinWidth(180);
+        showTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+                int row = showTable.getSelectedRow();
+                if (row > -1) {
+                    selectedShow = currentShows.get(row);
+                    String type = selectedShow.getTitleType();
+                    if (type.equals("tvSeries") || type.equals("tvEpisode"))
+                        episodeButton.setEnabled(true);
+                    else
+                        episodeButton.setEnabled(false);
+                    imdbButton.setEnabled(true);
+                } else {
+                    selectedShow = null;
+                    episodeButton.setEnabled(false);
+                    imdbButton.setEnabled(false);
+                }
+            }
+        });
     }
 
     private void createGenreCombo() {
@@ -165,6 +194,36 @@ public class MainUI {
             @Override
             public void changedUpdate(DocumentEvent e) {
                 showShows();
+            }
+        });
+    }
+
+    private void createEpisodesButton() {
+        episodeButton.setEnabled(false);
+        episodeButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int row = showTable.getSelectedRow();
+                if (currentShows.get(row).getParentId() == null)
+                    Main.showSeriesInfo(currentShows.get(row).getId(), currentShows.get(row).getTitle());
+                else
+                    Main.showSeriesInfo(currentShows.get(row).getParentId(), currentShows.get(row).getParentTitle());
+            }
+        });
+    }
+
+    private void createIMDBButton() {
+        imdbButton.setEnabled(false);
+        imdbButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent event) {
+                try {
+                    Desktop.getDesktop().browse(
+                            new URL("http://www.imdb.com/title/" + selectedShow.getId()).toURI()
+                    );
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         });
     }

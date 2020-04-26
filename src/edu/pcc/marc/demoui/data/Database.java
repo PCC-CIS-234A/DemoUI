@@ -1,5 +1,6 @@
 package edu.pcc.marc.demoui.data;
 
+import edu.pcc.marc.demoui.logic.Episode;
 import edu.pcc.marc.demoui.logic.Genre;
 import edu.pcc.marc.demoui.logic.Show;
 import edu.pcc.marc.demoui.logic.ShowType;
@@ -56,6 +57,14 @@ public class Database {
             "GROUP BY    child.tconst, child.titleType, child.primaryTitle, parent.primaryTitle, child.startYear, child.runtimeMinutes, averageRating, numVotes, parent.tconst\n" +
             "ORDER BY    averageRating DESC;";
 
+    private static final String FETCH_EPISODES_QUERY =
+            "SELECT	title_episode.tconst, seasonNumber, episodeNumber, primaryTitle, startYear, averageRating, numVotes"
+                    + " FROM		title_episode"
+                    + " JOIN		title_basics ON title_episode.tconst = title_basics.tconst"
+                    + " LEFT JOIN	title_ratings ON title_episode.tconst = title_ratings.tconst"
+                    + " WHERE		parentTconst = ?"
+                    + " ORDER BY	ISNULL(seasonNumber, 9999), episodeNumber, title_episode.tconst;";
+
     public static void connect() {
         if (connection != null) {
             return;
@@ -85,7 +94,6 @@ public class Database {
         return genres;
     }
 
-
     public static ArrayList<ShowType> getAllShowTypes() {
         connect();
         ArrayList<ShowType> types = new ArrayList<ShowType>();
@@ -113,7 +121,9 @@ public class Database {
             stmt.setString(3, genre);
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
-                // primaryTitle, startYear, averageRating, numVotes
+                // String id, String title, String type, String parentTitle,
+                // int start, int minutes, float rating, int numVotes,
+                // String genres, int numEpisodes, String parentId
                 shows.add(new Show(
                         rs.getString("tconst"),
                         rs.getString("primaryTitle"),
@@ -132,5 +142,53 @@ public class Database {
             e.printStackTrace();
         }
         return shows;
+    }
+
+
+    /**
+     * Fetch the episodes for a given series, along with their ratings.
+     *
+     * @param id The title id for the parent series.
+     * @return The list of episodes for that series.
+     */
+    public static ArrayList<Episode> fetchEpisodes(String id) {
+        ResultSet rs = null;
+        ArrayList<Episode> episodes = new ArrayList<>();
+        PreparedStatement statement;
+
+        try {
+            // Create a connection if there isn't one already
+            connect();
+
+            // Prepare a SQL statement
+            statement = connection.prepareStatement(FETCH_EPISODES_QUERY);
+
+            // This one has a single parameter for the role, so we bind the value of role to the parameter
+            statement.setString(1, id);
+
+            // Execute the query returning a result set
+            rs = statement.executeQuery();
+
+            // For each row in the result set, create a new User object with the specified values
+            // and add it to the list of results.
+            while (rs.next()) {
+                // matches public Episode(String id, int season, int episode, String title, int year, float rating, int numVotes);
+                episodes.add(new Episode(
+                        rs.getString("tconst"),
+                        rs.getInt("seasonNumber"),
+                        rs.getInt("episodeNumber"),
+                        rs.getString("primaryTitle"),
+                        rs.getInt("startYear"),
+                        rs.getFloat("averageRating"),
+                        rs.getInt("numVotes")
+                ));
+            }
+        } catch (Exception e) {
+            System.err.println("Error: Interrupted or couldn't connect to database.");
+            statement = null;
+            return null;
+        }
+        // Return the list of results. Will be an empty list if there was an error.
+        return episodes;
     }
 }
