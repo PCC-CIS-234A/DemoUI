@@ -18,8 +18,14 @@ class EpisodeTest {
     @Test
     void fetchEpisodesValidID() {
         ArrayList<Episode> episodes = Episode.fetchEpisodes("tt0303461");
+        Episode first = new Episode("tt0579539", 1, 1, "The Train Job",
+                2002, 8.5f, 3475);
+        Episode last = new Episode("tt0579538", 1, 14, "The Message",
+                2003, 8.5f, 2980);
 
         assertEquals(14, episodes.size());
+        assertEquals(first, episodes.get(0));
+        assertEquals(last, episodes.get(13));
     }
 
     @Test

@@ -3,6 +3,7 @@ package edu.pcc.marc.demoui.logic;
 import edu.pcc.marc.demoui.data.Database;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class Episode {
     private String m_ID;
@@ -21,6 +22,33 @@ public class Episode {
         m_Year = year;
         m_Rating = rating;
         m_NumVotes = numVotes;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == this)
+            return true;
+        if (o == null)
+            return false;
+        if (o.getClass() == this.getClass()) {
+            Episode e = (Episode) o;
+            if (!m_ID.equals(e.getID()))
+                return false;
+            if (m_SeasonNumber != e.getSeasonNumber())
+                return false;
+            if (m_EpisodeNumber != e.getEpisodeNumber())
+                return false;
+            if (!m_Title.equals(e.getTitle()))
+                return false;
+            if (m_Year != e.getYear())
+                return false;
+            if (m_Rating != e.getRating())
+                return false;
+            if (m_NumVotes != e.getNumVotes())
+                return false;
+            return true;
+        }
+        return false;
     }
 
     public static ArrayList<Episode> fetchEpisodes(String id) {
