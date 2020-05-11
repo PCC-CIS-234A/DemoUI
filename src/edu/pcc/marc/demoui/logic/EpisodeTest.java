@@ -35,6 +35,7 @@ class EpisodeTest {
                         new Episode("tt0579540", 1, 13, "Trash", 2003, 8.6f, 3106),
                         new Episode("tt0579538", 1, 14, "The Message", 2003, 8.5f, 2980))
         );
+        assertEquals(expectedEpisodes, episodes);
     }
 
     @Test
@@ -64,7 +65,7 @@ class EpisodeTest {
     @Test
     void getYear() {
         Episode e = new Episode(null, 0, 0, null, 2020, 0.0f, 0);
-        assertEquals(2021, e.getYear());
+        assertEquals(2020, e.getYear());
     }
 
     @Test
