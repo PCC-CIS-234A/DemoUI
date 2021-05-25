@@ -18,4 +18,17 @@ public class Genre {
     public String getName() {
         return name;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == this)
+            return true;
+        if (o == null)
+            return false;
+        if (o.getClass() == this.getClass()) {
+            Genre g = (Genre) o;
+            return name.equals(g.getName());
+        }
+        return false;
+    }
 }

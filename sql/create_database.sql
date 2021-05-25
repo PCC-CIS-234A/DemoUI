@@ -1,0 +1,9 @@
+USE 234A_A_TEAM
+
+DROP TABLE Users;
+
+CREATE TABLE Users (
+    VARCHAR(256) Username PRIMARY KEY,
+    VARCHAR(256) PasswordHash,
+    VARCHAR(10) Role
+)
